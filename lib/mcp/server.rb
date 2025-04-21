@@ -55,9 +55,11 @@ module MCP
     def serve(client_connection)
       loop do
         next_message = client_connection.read_next_message
+        Rails.logger.info("MCP Server next_message #{next_message}")
         break if next_message.nil? # Client closed the connection
 
         response = process_input(next_message)
+        Rails.logger.info("MCP Server response #{response}")
         next unless response # Notifications don't return a response so don't send anything
 
         client_connection.send_message(response)
