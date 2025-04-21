@@ -222,13 +222,13 @@ module MCP
 
     def handle_list_resources(request)
       cursor = request.dig(:params, :cursor)
-      result = @app.list_resources(cursor:)
+      result = @app.list_resources(cursor)
       success_response(request[:id], result)
     end
 
     def handle_list_resources_templates(request)
       cursor = request.dig(:params, :cursor)
-      result = @app.list_resource_templates(cursor:)
+      result = @app.list_resource_templates(cursor)
       success_response(request[:id], result)
     end
 
