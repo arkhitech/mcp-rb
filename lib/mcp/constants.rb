@@ -3,7 +3,7 @@
 module MCP
   module Constants
     JSON_RPC_VERSION = "2.0"
-    SUPPORTED_PROTOCOL_VERSIONS = %w[2024-11-05].freeze
+    SUPPORTED_PROTOCOL_VERSIONS = %w[2024-11-05 2025-03-26].freeze
     PROTOCOL_VERSION = SUPPORTED_PROTOCOL_VERSIONS.max
 
     module ErrorCodes
