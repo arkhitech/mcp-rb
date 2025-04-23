@@ -16,7 +16,6 @@ module MCP
       @name = name
       @version = version
       @app = App.new
-      @initialized = false
       @message_validator = MessageValidator.new protocol_version: Constants::PROTOCOL_VERSION
     end
 
@@ -42,10 +41,6 @@ module MCP
 
     def resource_template(uri_template, &block)
       @app.register_resource_template(uri_template, &block)
-    end
-
-    def initialized?
-      @initialized
     end
 
     # Serve a client via the given connection.
@@ -135,15 +130,6 @@ module MCP
     end
 
     def handle_request(request)
-      allowed_methods = [
-        Constants::RequestMethods::INITIALIZE,
-        Constants::RequestMethods::INITIALIZED,
-        Constants::RequestMethods::PING
-      ]
-      if !@initialized && !allowed_methods.include?(request[:method])
-        return error_response(request[:id], Constants::ErrorCodes::NOT_INITIALIZED, "Server not initialized")
-      end
-
       case request[:method]
       when Constants::RequestMethods::INITIALIZE then handle_initialize(request)
       when Constants::RequestMethods::INITIALIZED then handle_initialized(request)
@@ -157,8 +143,6 @@ module MCP
     end
 
     def handle_initialize(request)
-      return error_response(request[:id], Constants::ErrorCodes::ALREADY_INITIALIZED, "Server already initialized") if @initialized
-
       client_version = request.dig(:params, :protocolVersion)
       unless Constants::SUPPORTED_PROTOCOL_VERSIONS.include?(client_version)
         return error_response(
@@ -195,9 +179,6 @@ module MCP
     end
 
     def handle_initialized(request)
-      return error_response(request[:id], Constants::ErrorCodes::ALREADY_INITIALIZED, "Server already initialized") if @initialized
-
-      @initialized = true
       nil  # 通知に対しては応答を返さない
     end
 
