@@ -21,7 +21,7 @@ module MCP
 
   # require 'mcp' したファイルで最後に到達したら実行されるようにするため
   # https://docs.ruby-lang.org/ja/latest/method/Kernel/m/at_exit.html
-  at_exit { server.serve(Server::StdioClientConnection.new) if $ERROR_INFO.nil? && server }
+  # at_exit { server.serve(Server::StdioClientConnection.new) if $ERROR_INFO.nil? && server }
 
   def self.new(**options, &block)
     @server = Server.new(**options)
