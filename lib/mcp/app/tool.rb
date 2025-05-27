@@ -121,7 +121,7 @@ module MCP
       def call_tool(name, **args)
         tool = tools[name]
         raise ArgumentError, "Tool not found: #{name}" unless tool
-
+        Rails.logger.info("MCP Called #{tool} with #{args}")
         validate_arguments(tool[:input_schema], args)
         {content: [{type: "text", text: tool[:handler].call(args).to_s}], isError: false}
       rescue => e
@@ -138,6 +138,9 @@ module MCP
           if !arg.is_a?(Hash)
             errors << (path.empty? ? "Arguments must be a hash" : "Expected object for #{path}, got #{arg.class}")
           else
+            arg = arg.with_indifferent_access
+            Rails.logger.info("MCP Checking #{arg} == #{schema[:required]}")
+            Rails.logger.info("MCP Checking #{arg} == #{schema.class}")
             schema[:required]&.each do |req|
               unless arg.key?(req)
                 errors << (path.empty? ? "Missing required param :#{req}" : "Missing required param #{path}.#{req}")
