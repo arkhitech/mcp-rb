@@ -22,6 +22,7 @@ module MCP
               sub_builder.instance_eval(&block)
               item_schema = sub_builder.to_schema
             elsif items
+              byebug if name == /excluded/
               item_schema = {type: ruby_type_to_schema_type(items)}
             else
               raise ArgumentError, "Must provide items or a block for array type"
@@ -121,7 +122,7 @@ module MCP
       def call_tool(name, **args)
         tool = tools[name]
         raise ArgumentError, "Tool not found: #{name}" unless tool
-        Rails.logger.info("MCP Called #{tool} with #{args}")
+        # Rails.logger.info("MCP Called #{tool} with #{args}")
         validate_arguments(tool[:input_schema], args)
         {content: [{type: "text", text: tool[:handler].call(args).to_s}], isError: false}
       rescue => e
@@ -133,14 +134,13 @@ module MCP
       def validate(schema, arg, path = "")
         errors = []
         type = schema[:type]
-
         if type == :object
           if !arg.is_a?(Hash)
             errors << (path.empty? ? "Arguments must be a hash" : "Expected object for #{path}, got #{arg.class}")
           else
-            arg = arg.with_indifferent_access
-            Rails.logger.info("MCP Checking #{arg} == #{schema[:required]}")
-            Rails.logger.info("MCP Checking #{arg} == #{schema.class}")
+            # arg = arg.with_indifferent_access
+            # Rails.logger.info("MCP Checking #{arg} == #{schema[:required]}")
+            # Rails.logger.info("MCP Checking #{arg} == #{schema.class}")
             schema[:required]&.each do |req|
               unless arg.key?(req)
                 errors << (path.empty? ? "Missing required param :#{req}" : "Missing required param #{path}.#{req}")
